@@ -181,7 +181,7 @@ class _LogViewerScreenState extends State<LogViewerScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('分享日志失败：$e')));
+      ).showSnackBar(SnackBar(content: Text('Failed to share logs: $e')));
     }
   }
 
@@ -219,12 +219,12 @@ class _LogViewerScreenState extends State<LogViewerScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('日志（最近 ${entries.length} 条）'),
+        title: Text('Logs (latest ${entries.length})'),
         centerTitle: true,
         actions: [
           IconButton(
             key: const ValueKey('log_viewer_share_button'),
-            tooltip: '分享日志',
+            tooltip: 'Share logs',
             icon: const Icon(Icons.ios_share),
             onPressed: entries.isEmpty ? null : () => unawaited(_shareAll()),
           ),
@@ -237,7 +237,7 @@ class _LogViewerScreenState extends State<LogViewerScreen> {
       body: entries.isEmpty
           ? Center(
               child: Text(
-                '暂无日志',
+                'No logs yet',
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
@@ -254,7 +254,9 @@ class _LogViewerScreenState extends State<LogViewerScreen> {
                   ),
                   child: Align(
                     alignment: Alignment.centerLeft,
-                    child: Text('仅显示最近 500 条；分享日志可导出完整记录'),
+                    child: Text(
+                      'Showing the latest 500 entries; share logs to export the complete record',
+                    ),
                   ),
                 ),
                 Expanded(

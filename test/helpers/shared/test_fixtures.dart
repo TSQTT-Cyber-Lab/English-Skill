@@ -29,6 +29,7 @@ AudioItem createTestAudioItem({
   Object? transcriptSource = _deriveSource,
   DateTime? addedDate,
   int totalDuration = 120,
+  AudioContentStatus? contentStatus = AudioContentStatus.ok,
 }) {
   final resolvedSource = identical(transcriptSource, _deriveSource)
       ? ((transcriptPath != null && transcriptPath.isNotEmpty)
@@ -43,6 +44,7 @@ AudioItem createTestAudioItem({
     transcriptSource: resolvedSource,
     addedDate: addedDate ?? DateTime(2026, 1, 1),
     totalDuration: totalDuration,
+    contentStatus: contentStatus,
   );
 }
 

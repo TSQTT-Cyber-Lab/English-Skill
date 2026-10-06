@@ -24,7 +24,6 @@ class _StudyDurationChartState extends ConsumerState<StudyDurationChart> {
   @override
   Widget build(BuildContext context) {
     final async = ref.watch(studyDurationBucketsProvider(_granularity));
-    final isZh = Localizations.localeOf(context).languageCode == 'zh';
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.m),
@@ -32,7 +31,7 @@ class _StudyDurationChartState extends ConsumerState<StudyDurationChart> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              isZh ? '学习时长' : 'Study duration',
+              'Study duration',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
@@ -44,19 +43,19 @@ class _StudyDurationChartState extends ConsumerState<StudyDurationChart> {
                 segments: [
                   ButtonSegment(
                     value: StudyDurationGranularity.day,
-                    label: Text(isZh ? '日' : 'Day'),
+                    label: Text('Day'),
                   ),
                   ButtonSegment(
                     value: StudyDurationGranularity.week,
-                    label: Text(isZh ? '周' : 'Week'),
+                    label: Text('Week'),
                   ),
                   ButtonSegment(
                     value: StudyDurationGranularity.month,
-                    label: Text(isZh ? '月' : 'Month'),
+                    label: Text('Month'),
                   ),
                   ButtonSegment(
                     value: StudyDurationGranularity.year,
-                    label: Text(isZh ? '年' : 'Year'),
+                    label: Text('Year'),
                   ),
                 ],
                 selected: {_granularity},
@@ -270,7 +269,6 @@ class _BucketListState extends ConsumerState<_BucketList> {
     if (_sheetOpen) return;
     _sheetOpen = true;
     final service = ref.read(studyTimeServiceProvider);
-    final isZh = Localizations.localeOf(context).languageCode == 'zh';
     final start = bucket.periodStart;
     final end = bucket.periodEnd;
     debugPrint('[StudyDurationChart] 加载阶段明细：$start — $end');
@@ -278,10 +276,8 @@ class _BucketListState extends ConsumerState<_BucketList> {
       StudyDurationGranularity.day => null,
       StudyDurationGranularity.week =>
         '${start.year}/${start.month}/${start.day} – ${end.year}/${end.month}/${end.day}',
-      StudyDurationGranularity.month =>
-        isZh ? '${start.year}年${start.month}月' : '${start.year}/${start.month}',
-      StudyDurationGranularity.year =>
-        isZh ? '${start.year}年' : '${start.year}',
+      StudyDurationGranularity.month => '${start.year}/${start.month}',
+      StudyDurationGranularity.year => '${start.year}',
     };
     var query = service.getStageBreakdownInRange(start, end);
     try {
@@ -420,18 +416,18 @@ bool _sameDate(DateTime left, DateTime right) =>
 
 String _currentLabel(StudyDurationGranularity granularity) =>
     switch (granularity) {
-      StudyDurationGranularity.day => '今天',
-      StudyDurationGranularity.week => '本周',
-      StudyDurationGranularity.month => '本月',
-      StudyDurationGranularity.year => '今年',
+      StudyDurationGranularity.day => 'Today',
+      StudyDurationGranularity.week => 'This week',
+      StudyDurationGranularity.month => 'This month',
+      StudyDurationGranularity.year => 'This year',
     };
 
 String _previousLabel(StudyDurationGranularity granularity) =>
     switch (granularity) {
-      StudyDurationGranularity.day => '昨天',
-      StudyDurationGranularity.week => '上周',
-      StudyDurationGranularity.month => '上月',
-      StudyDurationGranularity.year => '去年',
+      StudyDurationGranularity.day => 'Yesterday',
+      StudyDurationGranularity.week => 'Last week',
+      StudyDurationGranularity.month => 'Last month',
+      StudyDurationGranularity.year => 'Last year',
     };
 
 String _currentLabelEn(StudyDurationGranularity granularity) =>

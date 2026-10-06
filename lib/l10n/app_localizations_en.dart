@@ -539,7 +539,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageEnglish => 'English';
 
   @override
-  String get languageChinese => '简体中文';
+  String get languageChinese => 'Chinese (Simplified)';
 
   @override
   String get nativeLanguage => 'Native Language';

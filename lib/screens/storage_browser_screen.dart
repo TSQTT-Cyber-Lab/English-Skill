@@ -53,7 +53,7 @@ class _StorageBrowserScreenState extends State<StorageBrowserScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('内部存储')),
+      appBar: AppBar(title: const Text('Internal Storage')),
       body: FutureBuilder<List<_StorageRoot>>(
         future: _rootsFuture,
         builder: (context, snapshot) {
@@ -162,7 +162,7 @@ class _DirectoryScreenState extends State<_DirectoryScreen> {
           }
           final entries = snapshot.data ?? [];
           if (entries.isEmpty) {
-            return const Center(child: Text('(空目录)'));
+            return const Center(child: Text('(Empty directory)'));
           }
           return ListView.separated(
             itemCount: entries.length,

@@ -25,11 +25,8 @@ void manageSubtitlesTests() {
       );
       await safeSettle(tester);
 
-      // 导航到资源库页 → 音频 Tab
-      await tester.tap(find.byIcon(Icons.library_music_outlined));
-      await safeSettle(tester);
-      await tester.tap(find.text('Audio'));
-      await safeSettle(tester);
+      // 导航到资源库全量音频列表
+      await openLibraryAudioList(tester);
 
       // 打开弹出菜单
       await tester.tap(find.byType(PopupMenuButton<String>));
@@ -44,7 +41,7 @@ void manageSubtitlesTests() {
 
       // 两个选项卡片都可见
       expect(find.text('Local Upload'), findsOneWidget);
-      expect(find.text('AI Transcription'), findsOneWidget);
+      expect(find.text('Cloud Transcription'), findsOneWidget);
 
       // 无字幕音频打开管理字幕时，AI 转录为默认选中（initState 内 if 分支），
       // 此时语言选择器应可见。
@@ -64,17 +61,15 @@ void manageSubtitlesTests() {
             transcriptPath: 'transcripts/test.srt',
             addedDate: DateTime(2026, 1, 1),
             totalDuration: 120,
+            contentStatus: AudioContentStatus.ok,
             transcriptSource: TranscriptSource.local,
           ),
         ),
       );
       await safeSettle(tester);
 
-      // 导航到资源库页 → 音频 Tab
-      await tester.tap(find.byIcon(Icons.library_music_outlined));
-      await safeSettle(tester);
-      await tester.tap(find.text('Audio'));
-      await safeSettle(tester);
+      // 导航到资源库全量音频列表
+      await openLibraryAudioList(tester);
 
       // 打开管理字幕弹窗
       await tester.tap(find.byType(PopupMenuButton<String>));
@@ -96,17 +91,15 @@ void manageSubtitlesTests() {
             transcriptPath: 'transcripts/test.srt',
             addedDate: DateTime(2026, 1, 1),
             totalDuration: 120,
+            contentStatus: AudioContentStatus.ok,
             transcriptSource: TranscriptSource.local,
           ),
         ),
       );
       await safeSettle(tester);
 
-      // 导航到资源库页 → 音频 Tab
-      await tester.tap(find.byIcon(Icons.library_music_outlined));
-      await safeSettle(tester);
-      await tester.tap(find.text('Audio'));
-      await safeSettle(tester);
+      // 导航到资源库全量音频列表
+      await openLibraryAudioList(tester);
 
       // 打开管理字幕弹窗
       await tester.tap(find.byType(PopupMenuButton<String>));
@@ -120,7 +113,7 @@ void manageSubtitlesTests() {
 
       // 确认对话框出现
       expect(
-        find.text('Are you sure you want to delete the subtitle?'),
+        find.text('Are you sure you want to delete the subtitles?'),
         findsOneWidget,
       );
 
@@ -142,17 +135,15 @@ void manageSubtitlesTests() {
             transcriptPath: 'transcripts/test.srt',
             addedDate: DateTime(2026, 1, 1),
             totalDuration: 120,
+            contentStatus: AudioContentStatus.ok,
             transcriptSource: TranscriptSource.local,
           ),
         ),
       );
       await safeSettle(tester);
 
-      // 导航到资源库页 → 音频 Tab → 管理字幕
-      await tester.tap(find.byIcon(Icons.library_music_outlined));
-      await safeSettle(tester);
-      await tester.tap(find.text('Audio'));
-      await safeSettle(tester);
+      // 导航到资源库全量音频列表 → 管理字幕
+      await openLibraryAudioList(tester);
       await tester.tap(find.byType(PopupMenuButton<String>));
       await safeSettle(tester);
       await tester.tap(find.text('Manage Subtitles'));
@@ -180,6 +171,7 @@ void manageSubtitlesTests() {
             transcriptPath: 'transcripts/test.srt',
             addedDate: DateTime(2026, 1, 1),
             totalDuration: 120,
+            contentStatus: AudioContentStatus.ok,
             transcriptSource: TranscriptSource.ai,
             transcriptLanguage: 'en',
           ),
@@ -187,11 +179,8 @@ void manageSubtitlesTests() {
       );
       await safeSettle(tester);
 
-      // 导航到资源库页 → 音频 Tab → 管理字幕
-      await tester.tap(find.byIcon(Icons.library_music_outlined));
-      await safeSettle(tester);
-      await tester.tap(find.text('Audio'));
-      await safeSettle(tester);
+      // 导航到资源库全量音频列表 → 管理字幕
+      await openLibraryAudioList(tester);
       await tester.tap(find.byType(PopupMenuButton<String>));
       await safeSettle(tester);
       // PopupMenuItem 在 overlay 层中，用 .last 确保命中
@@ -202,8 +191,8 @@ void manageSubtitlesTests() {
       expect(find.text('Local Upload'), findsWidgets);
 
       // 切换到 AI 选项（如果可见）
-      if (find.text('AI Transcription').evaluate().isNotEmpty) {
-        await tester.tap(find.text('AI Transcription'));
+      if (find.text('Cloud Transcription').evaluate().isNotEmpty) {
+        await tester.tap(find.text('Cloud Transcription'));
         await safeSettle(tester);
       }
 
@@ -214,7 +203,10 @@ void manageSubtitlesTests() {
       }
 
       // 同语言 → 禁用提示可见
-      if (find.text('Already transcribed with this option').evaluate().isNotEmpty) {
+      if (find
+          .text('Already transcribed with this option')
+          .evaluate()
+          .isNotEmpty) {
         expect(find.text('Already transcribed with this option'), findsWidgets);
       }
 
@@ -236,11 +228,8 @@ void manageSubtitlesTests() {
       );
       await safeSettle(tester);
 
-      // 导航到资源库页 → 音频 Tab → 管理字幕
-      await tester.tap(find.byIcon(Icons.library_music_outlined));
-      await safeSettle(tester);
-      await tester.tap(find.text('Audio'));
-      await safeSettle(tester);
+      // 导航到资源库全量音频列表 → 管理字幕
+      await openLibraryAudioList(tester);
       await tester.tap(find.byType(PopupMenuButton<String>));
       await safeSettle(tester);
       await tester.tap(find.text('Manage Subtitles'));
@@ -257,10 +246,10 @@ void manageSubtitlesTests() {
       await tester.tap(find.text('Local Upload'));
       await safeSettle(tester);
 
-      // 语言选择器消失，按钮文字变成 Upload Transcript
+      // 语言选择器消失，按钮文字变成 Upload Subtitles
       expect(find.text('Select Language'), findsNothing);
       expect(
-        find.widgetWithText(FilledButton, 'Upload Transcript'),
+        find.widgetWithText(FilledButton, 'Upload Subtitles'),
         findsOneWidget,
       );
     });
@@ -275,17 +264,15 @@ void manageSubtitlesTests() {
             transcriptPath: 'transcripts/test.srt',
             addedDate: DateTime(2026, 1, 1),
             totalDuration: 120,
+            contentStatus: AudioContentStatus.ok,
             transcriptSource: TranscriptSource.local,
           ),
         ),
       );
       await safeSettle(tester);
 
-      // 导航到资源库页 → 音频 Tab → 管理字幕
-      await tester.tap(find.byIcon(Icons.library_music_outlined));
-      await safeSettle(tester);
-      await tester.tap(find.text('Audio'));
-      await safeSettle(tester);
+      // 导航到资源库全量音频列表 → 管理字幕
+      await openLibraryAudioList(tester);
       await tester.tap(find.byType(PopupMenuButton<String>));
       await safeSettle(tester);
       await tester.tap(find.text('Manage Subtitles'));
@@ -296,11 +283,11 @@ void manageSubtitlesTests() {
       await safeSettle(tester);
 
       // 点击上传按钮
-      await tester.tap(find.widgetWithText(FilledButton, 'Upload Transcript'));
+      await tester.tap(find.widgetWithText(FilledButton, 'Upload Subtitles'));
       await safeSettle(tester);
 
       // 覆盖确认对话框出现
-      expect(find.text('Overwrite existing subtitle?'), findsOneWidget);
+      expect(find.text('Overwrite existing subtitles?'), findsOneWidget);
 
       // 取消 → 无变化
       await tester.tap(find.text('Cancel'));

@@ -396,7 +396,10 @@ void main() {
         expect(find.text('Open Source Project'), findsOneWidget);
         expect(find.text('github.com/echo-loop/Echo-Loop'), findsNothing);
         // 版本标签在页面底部，需要滚动到可见
-        await tester.scrollUntilVisible(find.textContaining('Version'), 200);
+        await tester.scrollUntilVisible(
+          find.text('Version 1.0.0 (Debug)'),
+          200,
+        );
         await tester.pumpAndSettle();
         expect(find.text('Version 1.0.0 (Debug)'), findsOneWidget);
       });

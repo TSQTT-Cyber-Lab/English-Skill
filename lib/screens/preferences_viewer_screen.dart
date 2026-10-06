@@ -58,9 +58,9 @@ class _PreferencesViewerScreenState
     final text = _entries.map((e) => '${e.key}: ${e.display}').join('\n');
     await Clipboard.setData(ClipboardData(text: text));
     if (!mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('已复制全部偏好设置到剪贴板')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('All preferences copied to the clipboard')),
+    );
   }
 
   /// 过滤当前快照，忽略大小写匹配 key 或 value。
@@ -85,19 +85,21 @@ class _PreferencesViewerScreenState
       builder: (dialogContext) {
         final theme = Theme.of(dialogContext);
         return AlertDialog(
-          title: const Text('删除偏好设置？'),
-          content: Text('key: $key\n此操作不可撤销，仅用于测试。'),
+          title: const Text('Delete preference?'),
+          content: Text(
+            'Key: $key\nThis cannot be undone and is intended for testing only.',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('取消'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(true),
               style: TextButton.styleFrom(
                 foregroundColor: theme.colorScheme.error,
               ),
-              child: const Text('删除'),
+              child: const Text('Delete'),
             ),
           ],
         );
@@ -121,7 +123,7 @@ class _PreferencesViewerScreenState
     });
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(SnackBar(content: Text('已删除 $key')));
+    ).showSnackBar(SnackBar(content: Text('Deleted $key')));
   }
 
   @override
@@ -129,15 +131,15 @@ class _PreferencesViewerScreenState
     final filtered = _filtered;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('偏好设置'),
+        title: const Text('Preferences'),
         actions: [
           IconButton(
-            tooltip: '刷新',
+            tooltip: 'Refresh',
             icon: const Icon(Icons.refresh),
             onPressed: _loading ? null : _load,
           ),
           IconButton(
-            tooltip: '复制全部',
+            tooltip: 'Copy all',
             icon: const Icon(Icons.copy_all),
             onPressed: _entries.isEmpty ? null : _copyAll,
           ),
@@ -150,7 +152,7 @@ class _PreferencesViewerScreenState
             child: TextField(
               decoration: const InputDecoration(
                 prefixIcon: Icon(Icons.search),
-                hintText: '搜索 key 或 value',
+                hintText: 'Search key or value',
                 border: OutlineInputBorder(),
                 isDense: true,
               ),
@@ -162,7 +164,7 @@ class _PreferencesViewerScreenState
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                '共 ${_entries.length} 条${_query.isEmpty ? '' : ' · 命中 ${filtered.length} 条'}',
+                '${_entries.length} total${_query.isEmpty ? '' : ' · ${filtered.length} matches'}',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ),
@@ -174,7 +176,7 @@ class _PreferencesViewerScreenState
                 : filtered.isEmpty
                 ? Center(
                     child: Text(
-                      _entries.isEmpty ? '无偏好设置' : '无匹配项',
+                      _entries.isEmpty ? 'No preferences' : 'No matches',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   )
@@ -243,7 +245,7 @@ class _PrefTile extends StatelessWidget {
         if (!context.mounted) return;
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('已复制 ${entry.key}')));
+        ).showSnackBar(SnackBar(content: Text('Copied ${entry.key}')));
       },
     );
   }

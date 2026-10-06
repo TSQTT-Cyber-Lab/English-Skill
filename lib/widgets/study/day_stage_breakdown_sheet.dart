@@ -126,20 +126,16 @@ class DayStageBreakdownSheet extends StatelessWidget {
     final isToday = _isToday(date);
 
     if (mode == StageBreakdownMode.input) {
-      return isZh ? '听力详情' : 'Listening Details';
+      return 'Listening Details';
     }
     if (mode == StageBreakdownMode.output) {
-      return isZh ? '口语详情' : 'Speaking Details';
+      return 'Speaking Details';
     }
 
     // 总览模式：日期 + 星期
-    final weekday = isZh
-        ? _weekdayChinese(date.weekday)
-        : _weekdayEnglish(date.weekday);
-    final dateStr = isZh
-        ? '${date.month}月${date.day}日 $weekday'
-        : '${_monthEnglish(date.month)} ${date.day} $weekday';
-    return '$dateStr${isToday ? (isZh ? '（今天）' : ' (Today)') : ''}';
+    final weekday = _weekdayEnglish(date.weekday);
+    final dateStr = '${_monthEnglish(date.month)} ${date.day} $weekday';
+    return '$dateStr${isToday ? ' (Today)' : ''}';
   }
 
   /// 无阶段数据时的回退显示
@@ -254,17 +250,6 @@ class DayStageBreakdownSheet extends StatelessWidget {
     return d.year == now.year && d.month == now.month && d.day == now.day;
   }
 
-  String _weekdayChinese(int wd) => switch (wd) {
-    1 => '周一',
-    2 => '周二',
-    3 => '周三',
-    4 => '周四',
-    5 => '周五',
-    6 => '周六',
-    7 => '周日',
-    _ => '',
-  };
-
   String _weekdayEnglish(int wd) => switch (wd) {
     1 => 'Monday',
     2 => 'Tuesday',
@@ -373,12 +358,12 @@ String _formatDuration(int seconds, AppLocalizations l10n) {
   if (seconds < 60) return l10n.stageBreakdownLessThanOneMin;
   final totalMin = (seconds / 60).ceil();
   if (totalMin < 60) {
-    return l10n.localeName == 'zh' ? '$totalMin分' : '${totalMin}m';
+    return '${totalMin}m';
   }
   final h = totalMin ~/ 60;
   final m = totalMin % 60;
   if (m == 0) return '${h}h';
-  return l10n.localeName == 'zh' ? '${h}h $m分' : '${h}h ${m}m';
+  return '${h}h ${m}m';
 }
 
 /// 构建 "听 Xm · 说 Ym" 文本

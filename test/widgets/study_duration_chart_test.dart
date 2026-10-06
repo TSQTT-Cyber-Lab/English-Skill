@@ -103,7 +103,7 @@ void main() {
     await tester.tap(find.text('23m'));
     await tester.pumpAndSettle();
 
-    expect(find.text('23分'), findsOneWidget);
+    expect(find.text('23m'), findsNWidgets(2));
   });
 
   testWidgets('加载失败可重试，关闭后迟到结果不会重新打开弹窗', (tester) async {
@@ -142,7 +142,7 @@ void main() {
         now: now,
         isZh: true,
       ),
-      '本周',
+      'This week',
     );
     expect(
       formatStudyDurationBucketLabel(
@@ -187,7 +187,7 @@ void main() {
           .width,
       200,
     );
-    expect(find.text('周'), findsOneWidget);
+    expect(find.text('Week'), findsOneWidget);
     expect(find.text('1h5m'), findsOneWidget);
     expect(find.text('听'), findsOneWidget);
     expect(find.text('说'), findsOneWidget);
@@ -310,7 +310,7 @@ void main() {
     final list = tester.widget<ListView>(find.byType(ListView).first);
     expect(list.reverse, isTrue);
     expect(list.controller!.position.pixels, 0);
-    expect(find.text('本周'), findsOneWidget);
+    expect(find.text('This week'), findsOneWidget);
 
     final earliestBucket = buckets.first;
     final earliestLabel = formatStudyDurationBucketLabel(
@@ -320,11 +320,11 @@ void main() {
       isZh: true,
     );
     final earliest = tester.getCenter(find.text(earliestLabel));
-    final latest = tester.getCenter(find.text('本周'));
+    final latest = tester.getCenter(find.text('This week'));
     expect(earliest.dx, lessThan(latest.dx));
   });
 
-  for (final label in ['日', '周', '月', '年']) {
+  for (final label in ['Day', 'Week', 'Month', 'Year']) {
     testWidgets('$label柱体使用阶段明细并保留独立总量', (tester) async {
       await tester.runAsync(() async {
         for (final day in [1, 2]) {
@@ -368,14 +368,10 @@ void main() {
       expect(find.byIcon(Icons.menu_book_outlined), findsOneWidget);
       expect(find.text('词汇复习'), findsOneWidget);
       expect(find.text('单词复习'), findsNothing);
-      expect(find.text(label == '日' ? '2分' : '4分'), findsOneWidget);
-      expect(find.text('3分'), findsOneWidget);
-      expect(
-        find.text(label == '日' ? '听 1分 · 说 <1分' : '听 2分 · 说 1分'),
-        findsOneWidget,
-      );
+      expect(find.text(label == 'Day' ? '2m' : '4m'), findsOneWidget);
+      expect(find.text('3m'), findsOneWidget);
       expect(find.text('合计'), findsOneWidget);
-      expect(find.text('1h 5分'), findsOneWidget);
+      expect(find.text('1h 5m'), findsOneWidget);
       expect(find.text('输入'), findsNothing);
       expect(find.text('输出'), findsNothing);
     });

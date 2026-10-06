@@ -30,9 +30,6 @@ class _ActivityCalendarScreenState
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
-  /// 中文星期简称（一 ~ 日）
-  static const _zhWeekdays = ['一', '二', '三', '四', '五', '六', '日'];
-
   /// 英文星期简称
   static const _enWeekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -175,7 +172,7 @@ class _ActivityCalendarScreenState
       calendarBuilders: CalendarBuilders(
         // 星期标题：中文显示 一~日，英文显示 Mon~Sun
         dowBuilder: (context, day) {
-          final labels = isZh ? _zhWeekdays : _enWeekdays;
+          final labels = _enWeekdays;
           final label = labels[day.weekday - 1];
           return Center(
             child: Text(
@@ -232,7 +229,7 @@ class _ActivityCalendarScreenState
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            isZh ? '学习时间短' : 'Less study time',
+            'Less study time',
             style: theme.textTheme.labelSmall?.copyWith(
               fontSize: 10,
               color: theme.colorScheme.onSurfaceVariant,
@@ -248,7 +245,7 @@ class _ActivityCalendarScreenState
           ],
           const SizedBox(width: 6),
           Text(
-            isZh ? '学习时间长' : 'More study time',
+            'More study time',
             style: theme.textTheme.labelSmall?.copyWith(
               fontSize: 10,
               color: theme.colorScheme.onSurfaceVariant,

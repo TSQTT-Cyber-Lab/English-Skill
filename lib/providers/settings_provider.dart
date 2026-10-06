@@ -45,19 +45,14 @@ DateTime normalizedFutureTimeMachineDateTime(DateTime value, DateTime now) {
 ///
 /// 后续扩展只需在此处添加条目。
 const supportedNativeLanguages = <String, String>{
-  'zh-CN': '简体中文',
-  'zh-TW': '繁體中文',
+  'zh-CN': 'Chinese (Simplified)',
+  'zh-TW': 'Chinese (Traditional)',
 };
 
 /// 根据系统 locale 匹配应用界面语言。
 ///
-/// 当前界面只支持中文 / 英文：
-/// - 中文系列（zh）→ `Locale('zh', 'CN')`
-/// - 其它任何语言（含未识别）→ `Locale('en')`
-Locale matchUiLocale(Locale systemLocale) {
-  if (systemLocale.languageCode == 'zh') return const Locale('zh', 'CN');
-  return const Locale('en');
-}
+/// The interface is English-only, regardless of the system locale.
+Locale matchUiLocale(Locale systemLocale) => const Locale('en');
 
 /// 根据系统 locale 匹配母语。
 ///
@@ -186,7 +181,7 @@ class AppSettingsState {
 ///
 /// 解析规则：
 /// - SP 'en' → Locale('en')
-/// - SP 'zh' / 'zh-CN' → Locale('zh', 'CN')
+/// - Legacy SP 'zh' / 'zh-CN' → Locale('en')
 /// - SP 'system' / 缺失 / 异常值 → null（跟随系统）
 ///
 /// 未 override 时返回 null，单测里也安全。
@@ -208,7 +203,7 @@ Locale? readInitialUiLocaleSync(SharedPreferences prefs) {
   final stored = prefs.getString(_localeKey);
   return switch (stored) {
     'en' => const Locale('en'),
-    'zh' || 'zh-CN' => const Locale('zh', 'CN'),
+    'zh' || 'zh-CN' => const Locale('en'),
     _ => null, // 'system' / null / 异常 → 跟随系统
   };
 }
@@ -245,10 +240,13 @@ class AppSettings extends _$AppSettings {
       _ => ThemeMode.system,
     };
 
-    // 界面语言：未设置或设置为 'system' 时返回 null，让 MaterialApp 跟随系统
-    // （`matchUiLocale` 的语义同样适用——zh 系列→中文，其它→英文）。
-    // 不再首次启动时自动持久化具体语言，保证设置页默认显示"跟随系统"。
+    // Legacy Chinese UI preferences are migrated to English on load. A missing
+    // value still means the settings screen displays "Follow System".
     final locale = readInitialUiLocaleSync(prefs);
+    final storedLocale = prefs.getString(_localeKey);
+    if (storedLocale == 'zh' || storedLocale == 'zh-CN') {
+      await prefs.setString(_localeKey, 'en');
+    }
 
     // 母语：首次启动时根据系统语言匹配并持久化
     final nativeLanguage = await _loadNativeLanguage(prefs);
@@ -332,20 +330,18 @@ class AppSettings extends _$AppSettings {
     await prefs.setString(_themeModeKey, modeString);
   }
 
-  /// 设置界面语言（BCP 47）。
+  /// Sets the interface language. Non-null input is normalized to English.
   ///
-  /// 传入 null 时跟随系统语言。
+  /// Passing null keeps the user's "Follow System" preference; the app still
+  /// resolves that preference to English because English is the only UI locale.
   Future<void> setLocale(Locale? locale) async {
-    state = locale == null
+    final normalizedLocale = locale == null ? null : const Locale('en');
+    state = normalizedLocale == null
         ? state.copyWith(clearLocale: true)
-        : state.copyWith(locale: locale);
+        : state.copyWith(locale: normalizedLocale);
 
     final prefs = await SharedPreferences.getInstance();
-    final tag = locale == null
-        ? 'system'
-        : locale.countryCode != null
-        ? '${locale.languageCode}-${locale.countryCode}'
-        : locale.languageCode;
+    final tag = normalizedLocale == null ? 'system' : 'en';
     await prefs.setString(_localeKey, tag);
   }
 

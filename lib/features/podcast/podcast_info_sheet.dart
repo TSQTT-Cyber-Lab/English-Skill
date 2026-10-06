@@ -80,17 +80,16 @@ String? podcastRefreshStatusText(
   Collection collection, {
   DateTime? refreshingAt,
 }) {
-  final isZh = l10n.localeName.startsWith('zh');
   if (refreshingAt != null) {
     final time = _formatDateTime(refreshingAt);
-    return isZh ? '刷新中 · $time' : 'Refreshing · $time';
+    return 'Refreshing · $time';
   }
 
   final refreshedAt = collection.podcastLastRefreshedAt;
   if (refreshedAt == null) return null;
   if (!podcastHasRefreshError(collection)) return null;
   final time = _formatDateTime(refreshedAt);
-  return isZh ? '失败 · $time' : 'Failed · $time';
+  return 'Failed · $time';
 }
 
 /// Podcast 合集是否存在最近一次刷新错误。
@@ -100,7 +99,7 @@ bool podcastHasRefreshError(Collection collection) {
 
 /// Podcast 合集列表上的刷新失败短标记。
 String podcastRefreshFailedLabel(AppLocalizations l10n) {
-  return l10n.localeName.startsWith('zh') ? '刷新失败' : 'Refresh failed';
+  return 'Refresh failed';
 }
 
 /// 展示通用 Podcast 信息弹窗。

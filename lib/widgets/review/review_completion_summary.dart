@@ -206,9 +206,9 @@ class _ReviewCompletionSummaryState extends State<ReviewCompletionSummary> {
     final minutes = value.inMinutes;
     final seconds = value.inSeconds.remainder(60);
     if (minutes > 0) {
-      return isZh ? '$minutes分$seconds秒' : '${minutes}m ${seconds}s';
+      return '${minutes}m ${seconds}s';
     }
-    return isZh ? '$seconds秒' : '${seconds}s';
+    return '${seconds}s';
   }
 }
 

@@ -257,7 +257,7 @@ class _PreviewList extends StatelessWidget {
           if (isEmpty) {
             return const SizedBox(
               height: 160,
-              child: Center(child: Text('暂无文件')),
+              child: Center(child: Text('No files available')),
             );
           }
           final fileIndex = index - 2;

@@ -493,7 +493,7 @@ class _EchoLoopAppState extends ConsumerState<EchoLoopApp>
       darkTheme: AppTheme.dark(),
       themeMode: settings.themeMode,
       locale: settings.locale,
-      supportedLocales: const [Locale('en'), Locale('zh', 'CN')],
+      supportedLocales: const [Locale('en')],
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,

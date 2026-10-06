@@ -57,10 +57,10 @@ class _SubscriptionDebugScreenState
     try {
       await action();
       if (!mounted) return;
-      _toast('$label 完成');
+      _toast('$label completed');
     } catch (e) {
       if (!mounted) return;
-      _toast('$label 失败：$e');
+      _toast('$label failed: $e');
     } finally {
       if (mounted) {
         setState(() => _busy = null);
@@ -82,7 +82,7 @@ class _SubscriptionDebugScreenState
     final identity = ref.watch(subscriptionIdentityProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('订阅调试')),
+      appBar: AppBar(title: const Text('Subscription Debug')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -107,16 +107,19 @@ class _SubscriptionDebugScreenState
     SubscriptionIdentity identity,
   ) {
     final ent = state.entitlement;
-    return _card('当前权益（App 真相源）', [
+    return _card('Current entitlement (app source of truth)', [
       _row('status', state.status.name),
       _row('isActive', '${state.isActive}'),
-      _row('isStale（来自陈旧缓存）', '${state.isStale}'),
+      _row('isStale (from stale cache)', '${state.isStale}'),
       if (state.error != null) _row('error', state.error!),
-      _row('userId', identity.userId ?? '匿名'),
+      _row('userId', identity.userId ?? 'Anonymous'),
       if (ent != null) ...[
         _row('isPremium', '${ent.isPremium}'),
         _row('productId', ent.productId ?? '—'),
-        _row('expiresAt', ent.expiresAt?.toIso8601String() ?? '永久 / 无'),
+        _row(
+          'expiresAt',
+          ent.expiresAt?.toIso8601String() ?? 'Permanent / none',
+        ),
         _row('willRenew', '${ent.willRenew}'),
       ],
     ]);
@@ -125,7 +128,7 @@ class _SubscriptionDebugScreenState
   // ── RevenueCat 原始数据卡片 ─────────────────────────────────
 
   Widget _snapshotCard() {
-    return _card('RevenueCat 原始 CustomerInfo', [
+    return _card('Raw RevenueCat CustomerInfo', [
       FutureBuilder<Map<String, Object?>>(
         future: _snapshotFuture,
         builder: (context, snap) {
@@ -136,11 +139,13 @@ class _SubscriptionDebugScreenState
             );
           }
           if (snap.hasError) {
-            return Text('读取失败：${snap.error}');
+            return Text('Read failed: ${snap.error}');
           }
           final data = snap.data ?? const {};
           if (data.isEmpty) {
-            return const Text('无数据（未配置 RevenueCat 或 Stub 实现）。');
+            return const Text(
+              'No data (RevenueCat or a stub implementation is not configured).',
+            );
           }
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,10 +153,10 @@ class _SubscriptionDebugScreenState
               for (final e in data.entries) _row(e.key, '${e.value}'),
               const SizedBox(height: 8),
               const Text(
-                'activeEntitlements 为空但有订阅 → 商品没挂到 entitlement；\n'
-                'key 与 lookForEntitlementId 不一致 → entitlement 标识没对上；\n'
-                'activeSubscriptions 仍有值 → 可能是 StoreKit Configuration 本地交易，\n'
-                '需在 Xcode「Debug ▸ StoreKit ▸ Manage Transactions」删除。',
+                'activeEntitlements is empty despite a subscription → the product is not linked to an entitlement;\n'
+                'key differs from lookForEntitlementId → the entitlement identifier does not match;\n'
+                'activeSubscriptions still has values → this may be a local StoreKit Configuration transaction.\n'
+                'Remove it in Xcode: Debug ▸ StoreKit ▸ Manage Transactions.',
                 style: TextStyle(fontSize: 12, color: Colors.grey),
               ),
             ],
@@ -168,31 +173,44 @@ class _SubscriptionDebugScreenState
     SubscriptionIdentity identity,
   ) {
     final busy = _busy != null;
-    return _card('操作', [
+    return _card('Actions', [
       ListTile(
         leading: const Text('🔄', style: TextStyle(fontSize: 20)),
-        title: const Text('清本地缓存 + 失效 RC 缓存 + 强刷'),
-        subtitle: const Text('解决「删了后台仍显示已订阅」'),
+        title: const Text('Clear local + RC caches and force refresh'),
+        subtitle: const Text(
+          'Fixes subscriptions that still appear active after removal',
+        ),
         enabled: !busy,
         onTap: busy
             ? null
-            : () => _run('清缓存并强刷', controller.clearLocalCacheAndRefresh),
+            : () => _run(
+                'Clear cache and force refresh',
+                controller.clearLocalCacheAndRefresh,
+              ),
       ),
       ListTile(
         leading: const Text('♻️', style: TextStyle(fontSize: 20)),
-        title: const Text('恢复购买'),
+        title: const Text('Restore purchases'),
         enabled: !busy,
-        onTap: busy ? null : () => _run('恢复购买', controller.restore),
+        onTap: busy
+            ? null
+            : () => _run('Restore purchases', controller.restore),
       ),
       ListTile(
         leading: const Text('🚪', style: TextStyle(fontSize: 20)),
-        title: const Text('登出（触发清权益）'),
-        subtitle: Text(identity.isSignedIn ? '当前已登录' : '未登录，不可用'),
+        title: const Text('Sign out (clears entitlements)'),
+        subtitle: Text(
+          identity.isSignedIn
+              ? 'Currently signed in'
+              : 'Not signed in; unavailable',
+        ),
         enabled: !busy && identity.isSignedIn,
         onTap: (busy || !identity.isSignedIn)
             ? null
-            : () =>
-                  _run('登出', () => ref.read(authControllerProvider).signOut()),
+            : () => _run(
+                'Sign out',
+                () => ref.read(authControllerProvider).signOut(),
+              ),
       ),
       if (busy)
         Padding(
@@ -218,17 +236,23 @@ class _SubscriptionDebugScreenState
     EntitlementState state,
     SubscriptionController controller,
   ) {
-    return _card('手动覆盖权益（仅 Debug）', [
+    return _card('Manual entitlement override (Debug only)', [
       const Text(
-        '不发起真实购买即测试会员 UI / Paywall。选「真实」解除覆盖回到在线对账。',
+        'Test the Premium UI / paywall without a real purchase. Choose "Live" to remove the override and resume online reconciliation.',
         style: TextStyle(fontSize: 12, color: Colors.grey),
       ),
       const SizedBox(height: 12),
       SegmentedButton<EntitlementStatus?>(
         segments: const [
-          ButtonSegment(value: null, label: Text('真实')),
-          ButtonSegment(value: EntitlementStatus.premium, label: Text('强制会员')),
-          ButtonSegment(value: EntitlementStatus.free, label: Text('强制 Free')),
+          ButtonSegment(value: null, label: Text('Live')),
+          ButtonSegment(
+            value: EntitlementStatus.premium,
+            label: Text('Force Premium'),
+          ),
+          ButtonSegment(
+            value: EntitlementStatus.free,
+            label: Text('Force Free'),
+          ),
         ],
         selected: {_overrideSelection(state)},
         onSelectionChanged: (sel) {

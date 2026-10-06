@@ -174,8 +174,7 @@ class _TodayCard extends StatelessWidget {
                           clampedInput,
                           isZh: l10n.localeName == 'zh',
                         ),
-                        wordText:
-                            '${_formatWordCount(stats.todayInputWords)}${l10n.localeName == 'zh' ? '词' : 'w'}',
+                        wordText: '${_formatWordCount(stats.todayInputWords)}w',
                         onTap: () => showDayStageBreakdownSheet(
                           context: context,
                           date: today,
@@ -313,7 +312,6 @@ class _VocabItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context)!;
     final baseStyle = theme.textTheme.labelSmall!.copyWith(fontSize: 12);
     return GestureDetector(
       onTap: onTap,
@@ -333,7 +331,7 @@ class _VocabItem extends StatelessWidget {
               ),
             ),
             Text(
-              l10n.localeName == 'zh' ? '词' : 'w',
+              'w',
               style: baseStyle.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -630,7 +628,7 @@ class _WeeklyBarChartState extends State<_WeeklyBarChart> {
 /// 中文: 0 → "0分", < 3600 → "N分", >= 3600 → "Nh Mm"
 /// 英文: 0 → "0m", < 3600 → "Nm", >= 3600 → "Nh Mm"
 String _formatTimeShort(int seconds, {bool isZh = true}) {
-  final minUnit = isZh ? '分' : 'm';
+  final minUnit = 'm';
   if (seconds <= 0) return '0$minUnit';
   final totalMinutes = (seconds / 60).ceil();
   if (totalMinutes < 60) return '$totalMinutes$minUnit';
@@ -693,33 +691,19 @@ class CefrRecommendationTable extends StatelessWidget {
     //   中级: 听力 15min, 口语 10min, 日总 25min
     //   高级: 听力 18min, 口语 12min, 日总 30min
     final levels = [
-      CefrLevel('A1–A2', isZh ? '初级' : 'Beginner', '12', '8', '5,000', '1,700'),
-      CefrLevel(
-        'B1–B2',
-        isZh ? '中级' : 'Intermediate',
-        '15',
-        '10',
-        '5,500',
-        '3,500',
-      ),
-      CefrLevel(
-        'C1–C2',
-        isZh ? '高级' : 'Advanced',
-        '18',
-        '12',
-        '6,000',
-        '5,000',
-      ),
+      CefrLevel('A1–A2', 'Beginner', '12', '8', '5,000', '1,700'),
+      CefrLevel('B1–B2', 'Intermediate', '15', '10', '5,500', '3,500'),
+      CefrLevel('C1–C2', 'Advanced', '18', '12', '6,000', '5,000'),
     ];
 
-    final listenHeader = isZh ? '听力（输入）' : 'Listening (input)';
-    final speakHeader = isZh ? '口语（输出）' : 'Speaking (output)';
-    final minLabel = isZh ? '分钟' : 'min';
-    final wordSuffix = isZh ? '词' : 'w';
+    final listenHeader = 'Listening (input)';
+    final speakHeader = 'Speaking (output)';
+    final minLabel = 'min';
+    final wordSuffix = 'w';
     final footnote = isZh
-        ? '输入输出比随水平提升从 ~3:2 趋近 ~1:1'
+        ? 'Input/output ratio moves from ~3:2 toward ~1:1 as proficiency increases'
         : 'Input/output ratio trends from ~3:2 to ~1:1 as level rises';
-    final sectionTitle = isZh ? '每日推荐最少练习量' : 'Daily minimum recommendation';
+    final sectionTitle = 'Daily minimum recommendation';
 
     final inputBg = kInputColor.withValues(alpha: isListening ? 0.08 : 0.03);
     final outputBg = kOutputColor.withValues(alpha: isListening ? 0.03 : 0.08);

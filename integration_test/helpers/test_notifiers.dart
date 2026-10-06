@@ -32,6 +32,7 @@ import 'package:echo_loop/providers/audio_engine/audio_engine_provider.dart';
 import 'package:echo_loop/providers/audio_library_provider.dart';
 import 'package:echo_loop/providers/collection_provider.dart';
 import 'package:echo_loop/providers/daily_study_time_provider.dart';
+import 'package:echo_loop/providers/favorite_sentence_lifecycle_provider.dart';
 import 'package:echo_loop/providers/learning_progress_provider.dart';
 import 'package:echo_loop/providers/learning_session/blind_listen_player_provider.dart';
 import 'package:echo_loop/providers/learning_session/intensive_listen_player_provider.dart';
@@ -135,6 +136,17 @@ class TestOfflineAsrSettings extends FakeOfflineAsrSettings {
 class TestStudyTimeService extends FakeStudyTimeService {}
 
 class TestBookmarkDao extends FakeBookmarkDao {}
+
+class TestFavoriteSentenceLifecycle extends FavoriteSentenceLifecycle {
+  TestFavoriteSentenceLifecycle(this._testRef) : super(_testRef);
+
+  final Ref _testRef;
+
+  @override
+  Future<void> removeAllForAudio(String audioItemId) {
+    return _testRef.read(bookmarkDaoProvider).removeAllForAudio(audioItemId);
+  }
+}
 
 class TestAudioItemDao extends FakeAudioItemDao {}
 
@@ -286,6 +298,42 @@ Future<void> safeSettle(
   }
 }
 
+/// 打开资源库中的全量音频列表。
+///
+/// 当前资源库暂时隐藏了合集/音频 SegmentedButton，只保留标题五连击后的
+/// “All”入口。集成测试通过这里进入音频列表，避免依赖已隐藏的 `Audio` tab
+/// 文案。
+Future<void> openLibraryAudioList(WidgetTester tester) async {
+  final railLibraryIcon = find.descendant(
+    of: find.byType(NavigationRail),
+    matching: find.byIcon(Icons.library_music_outlined),
+  );
+  final barLibraryIcon = find.descendant(
+    of: find.byType(NavigationBar),
+    matching: find.byIcon(Icons.library_music_outlined),
+  );
+
+  if (railLibraryIcon.evaluate().isNotEmpty) {
+    await tester.tap(railLibraryIcon.first);
+  } else {
+    await tester.tap(barLibraryIcon.first);
+  }
+  await safeSettle(tester);
+
+  if (find.text('Test Audio').evaluate().isNotEmpty) return;
+
+  final title = find.byKey(const Key('library_title'));
+  expect(title, findsOneWidget);
+  for (var i = 0; i < 5; i += 1) {
+    await tester.tap(title);
+    await tester.pump(const Duration(milliseconds: 50));
+  }
+  await safeSettle(tester);
+
+  await tester.tap(find.byKey(const Key('library_all_audio_button')));
+  await safeSettle(tester);
+}
+
 // ========== Analytics 初始化 ==========
 
 /// 空操作分析通道（集成测试用）
@@ -391,6 +439,9 @@ Widget createTestApp() {
         () => TestReviewDifficultPractice(),
       ),
       bookmarkDaoProvider.overrideWithValue(TestBookmarkDao()),
+      favoriteSentenceLifecycleProvider.overrideWith(
+        (ref) => TestFavoriteSentenceLifecycle(ref),
+      ),
       stageCompletionDaoProvider.overrideWithValue(TestStageCompletionDao()),
       audioItemDaoProvider.overrideWithValue(TestAudioItemDao()),
       packageInfoProvider.overrideWithValue(_testPackageInfo),
@@ -453,6 +504,9 @@ Widget createTestAppWithAudio({
         () => TestReviewDifficultPractice(),
       ),
       bookmarkDaoProvider.overrideWithValue(TestBookmarkDao()),
+      favoriteSentenceLifecycleProvider.overrideWith(
+        (ref) => TestFavoriteSentenceLifecycle(ref),
+      ),
       stageCompletionDaoProvider.overrideWithValue(TestStageCompletionDao()),
       audioItemDaoProvider.overrideWithValue(TestAudioItemDao()),
       packageInfoProvider.overrideWithValue(_testPackageInfo),

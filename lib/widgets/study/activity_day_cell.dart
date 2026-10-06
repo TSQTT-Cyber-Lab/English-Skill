@@ -162,10 +162,10 @@ class ActivityDayCell extends StatelessWidget {
         ? '${day.month}月${day.day}日'
         : '${_monthShort(day.month)} ${day.day}';
     if (!hasActivity) {
-      return '$dateStr, ${isZh ? "无学习记录" : "no activity"}';
+      return '$dateStr, no activity';
     }
     final minutes = (record!.studyTimeSeconds / 60).ceil();
-    return '$dateStr, ${isZh ? "学习$minutes分钟" : "studied $minutes minutes"}';
+    return '$dateStr, studied $minutes minutes';
   }
 
   String _monthShort(int m) => const [

@@ -351,7 +351,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                   BlendMode.srcIn,
                 ),
               ),
-              tooltip: '复习统计',
+              tooltip: 'Review statistics',
               onPressed: () async {
                 await context.push<void>(AppRoutes.reviewStatistics);
                 if (mounted) _refreshDueCounts();

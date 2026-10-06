@@ -246,8 +246,7 @@ String formatCompletedStageTimeLabel(
   DateTime completedAt,
 ) {
   final ago = formatTimeAgo(context, completedAt);
-  final isZh = Localizations.localeOf(context).languageCode == 'zh';
-  return isZh ? '完成于$ago' : 'Completed $ago';
+  return 'Completed $ago';
 }
 
 /// 逐句精听入口弹窗的「停顿下拉显示值」← 已解析设置。

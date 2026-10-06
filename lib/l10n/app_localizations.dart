@@ -1043,7 +1043,7 @@ abstract class AppLocalizations {
   /// No description provided for @languageChinese.
   ///
   /// In en, this message translates to:
-  /// **'简体中文'**
+  /// **'Chinese (Simplified)'**
   String get languageChinese;
 
   /// No description provided for @nativeLanguage.

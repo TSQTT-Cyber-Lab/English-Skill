@@ -17,23 +17,6 @@ void _useCompactViewport(WidgetTester tester) {
   });
 }
 
-Future<void> _goToLibraryTab(WidgetTester tester) async {
-  final railLibraryIcon = find.descendant(
-    of: find.byType(NavigationRail),
-    matching: find.byIcon(Icons.library_music_outlined),
-  );
-  final barLibraryIcon = find.descendant(
-    of: find.byType(NavigationBar),
-    matching: find.byIcon(Icons.library_music_outlined),
-  );
-  if (railLibraryIcon.evaluate().isNotEmpty) {
-    await tester.tap(railLibraryIcon.first);
-  } else {
-    await tester.tap(barLibraryIcon.first);
-  }
-  await tester.pump(const Duration(milliseconds: 500));
-}
-
 /// 标签管理相关集成测试
 void tagTests() {
   group('流程 9：标签管理', () {
@@ -42,12 +25,8 @@ void tagTests() {
       await tester.pumpWidget(createTestAppWithAudio());
       await tester.pump(const Duration(milliseconds: 500));
 
-      // 导航到资源库页
-      await _goToLibraryTab(tester);
-
-      // 切换到音频 Tab
-      await tester.tap(find.text('Audio'));
-      await tester.pump(const Duration(milliseconds: 500));
+      // 导航到资源库全量音频列表
+      await openLibraryAudioList(tester);
 
       // 验证音频项存在
       expect(find.text('Test Audio'), findsOneWidget);
@@ -96,10 +75,8 @@ void tagTests() {
       await tester.pumpWidget(createTestAppWithAudio());
       await tester.pump(const Duration(milliseconds: 500));
 
-      // 导航到资源库页 → 音频 Tab
-      await _goToLibraryTab(tester);
-      await tester.tap(find.text('Audio'));
-      await tester.pump(const Duration(milliseconds: 500));
+      // 导航到资源库全量音频列表
+      await openLibraryAudioList(tester);
 
       // 打开管理标签 Sheet
       await tester.tap(find.byType(PopupMenuButton<String>).first);

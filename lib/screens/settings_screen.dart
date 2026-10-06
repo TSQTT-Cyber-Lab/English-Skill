@@ -764,26 +764,26 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final result = await showDialog<String?>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('版本号覆盖'),
+        title: const Text('Version Override'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('真实版本号：$realVersion'),
+            Text('Actual version: $realVersion'),
             const SizedBox(height: 12),
             TextField(
               controller: textController,
               autofocus: true,
               decoration: const InputDecoration(
-                labelText: '模拟版本号',
-                hintText: '如 1.0.0',
+                labelText: 'Simulated version',
+                hintText: 'e.g. 1.0.0',
                 border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 8),
             const Text(
-              '设为低于远程 minimumVersion 触发强制更新，'
-              '低于 latestVersion 触发可选更新。',
+              'Set below remote minimumVersion to trigger a required update; '
+              'set below latestVersion to trigger an optional update.',
               style: TextStyle(fontSize: 12),
             ),
           ],
@@ -792,15 +792,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           // 清除覆盖：返回空串作为清除信号
           TextButton(
             onPressed: () => Navigator.of(context).pop(''),
-            child: const Text('清除覆盖'),
+            child: const Text('Clear Override'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(null),
-            child: const Text('取消'),
+            child: const Text('Cancel'),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(textController.text),
-            child: const Text('确定'),
+            child: const Text('Confirm'),
           ),
         ],
       ),
@@ -817,8 +817,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         SnackBar(
           content: Text(
             result.isEmpty
-                ? '已清除版本号覆盖，恢复真实版本 $realVersion'
-                : '已覆盖版本号为 $result，可点"检查更新"测试',
+                ? 'Version override cleared; using actual version $realVersion'
+                : 'Version overridden to $result. Tap "Check for Updates" to test.',
           ),
         ),
       );
@@ -867,17 +867,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ),
         ListTile(
           leading: _emojiIcon('🏷'),
-          title: const Text('版本号覆盖'),
-          subtitle: const Text('模拟旧版本以测试更新弹窗，重启后自动重置'),
+          title: const Text('Version Override'),
+          subtitle: const Text(
+            'Simulate an older version to test update prompts; resets after restart',
+          ),
           trailing: _trailingValue(
             context,
-            ref.watch(devVersionOverrideProvider) ?? '真实版本',
+            ref.watch(devVersionOverrideProvider) ?? 'Actual version',
           ),
           onTap: () => _showVersionOverrideDialog(context, ref),
         ),
         ListTile(
           leading: _emojiIcon('🎙'),
-          title: const Text('ASR 引擎测试'),
+          title: const Text('ASR Engine Test'),
           trailing: const Icon(Icons.chevron_right),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(builder: (_) => const AsrTestScreen()),
@@ -885,7 +887,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ),
         ListTile(
           leading: _emojiIcon('📋'),
-          title: const Text('日志'),
+          title: const Text('Logs'),
           trailing: const Icon(Icons.chevron_right),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(builder: (_) => const LogViewerScreen()),
@@ -893,8 +895,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ),
         ListTile(
           leading: _emojiIcon('💳'),
-          title: const Text('订阅调试'),
-          subtitle: const Text('诊断权益、清缓存强刷、覆盖 Pro/Free'),
+          title: const Text('Subscription Debug'),
+          subtitle: const Text(
+            'Inspect entitlements, force-refresh caches, and override Pro/Free',
+          ),
           trailing: const Icon(Icons.chevron_right),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(
@@ -923,7 +927,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             final service = ref.read(analyticsServiceProvider);
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('当前通道: ${service.channelName}'),
+                content: Text('Current channel: ${service.channelName}'),
                 duration: const Duration(seconds: 2),
               ),
             );
@@ -946,8 +950,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ),
         ListTile(
           leading: _emojiIcon('🎯'),
-          title: const Text('字幕自动校准'),
-          subtitle: const Text('AI 转录完成后按本地音频静音微调句边界'),
+          title: const Text('Subtitle Auto-Alignment'),
+          subtitle: const Text(
+            'Fine-tune sentence boundaries from local audio silence after AI transcription',
+          ),
           trailing: Switch(
             value: settings.subtitleAutoAlignEnabled,
             onChanged: (value) => ref
@@ -957,13 +963,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ),
         ListTile(
           leading: _emojiIcon('📖'),
-          title: const Text('词典查询'),
+          title: const Text('Dictionary Lookup'),
           trailing: const Icon(Icons.chevron_right),
           onTap: () => _showDictionaryLookupDialog(context),
         ),
         ListTile(
           leading: _emojiIcon('⚙️'),
-          title: const Text('偏好设置'),
+          title: const Text('Preferences'),
           trailing: const Icon(Icons.chevron_right),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(
@@ -973,7 +979,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ),
         ListTile(
           leading: _emojiIcon('💾'),
-          title: const Text('内部存储'),
+          title: const Text('Internal Storage'),
           trailing: const Icon(Icons.chevron_right),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(
@@ -1520,9 +1526,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   String _getLanguageName(AppLocalizations l10n, Locale? locale) {
     if (locale == null) return l10n.languageSystem;
-    if (locale.languageCode == 'zh') return l10n.languageChinese;
-    if (locale.languageCode == 'en') return l10n.languageEnglish;
-    return l10n.languageSystem;
+    return l10n.languageEnglish;
   }
 
   void _showThemeModeDialog(
@@ -1653,15 +1657,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               '🇺🇸',
               l10n.languageEnglish,
             ),
-            _buildLanguageOption(
-              context,
-              l10n,
-              settings,
-              controller,
-              const Locale('zh', 'CN'),
-              '🇨🇳',
-              l10n.languageChinese,
-            ),
           ],
         ),
       ),
@@ -1747,7 +1742,7 @@ class _DictionaryLookupDialogState extends State<_DictionaryLookupDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('词典查询'),
+      title: const Text('Dictionary Lookup'),
       content: SizedBox(
         width: double.maxFinite,
         child: Column(
@@ -1757,7 +1752,7 @@ class _DictionaryLookupDialogState extends State<_DictionaryLookupDialog> {
               controller: _controller,
               autofocus: true,
               decoration: InputDecoration(
-                hintText: '输入单词...',
+                hintText: 'Enter a word...',
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.search),
                   onPressed: _lookup,
@@ -1776,7 +1771,7 @@ class _DictionaryLookupDialogState extends State<_DictionaryLookupDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('关闭'),
+          child: const Text('Close'),
         ),
       ],
     );
@@ -1787,7 +1782,10 @@ class _DictionaryLookupDialogState extends State<_DictionaryLookupDialog> {
     if (_result == null) {
       return const Padding(
         padding: EdgeInsets.all(16),
-        child: Text('未收录', style: TextStyle(color: Colors.red, fontSize: 16)),
+        child: Text(
+          'Not found',
+          style: TextStyle(color: Colors.red, fontSize: 16),
+        ),
       );
     }
 
@@ -1809,7 +1807,7 @@ class _DictionaryLookupDialogState extends State<_DictionaryLookupDialog> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Text(
-                  '柯林斯: ${'★' * entry.collins}${'☆' * (5 - entry.collins)}',
+                  'Collins: ${'★' * entry.collins}${'☆' * (5 - entry.collins)}',
                   style: TextStyle(color: Colors.orange[700]),
                 ),
               ),

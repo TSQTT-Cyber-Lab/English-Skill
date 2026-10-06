@@ -179,9 +179,9 @@ class _AsrTestScreenState extends ConsumerState<AsrTestScreen> {
       final result = await platform.requestPermissions();
       if (!result.isGranted) {
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('需要录音权限')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Microphone permission is required')),
+          );
         }
         return;
       }
@@ -218,7 +218,7 @@ class _AsrTestScreenState extends ConsumerState<AsrTestScreen> {
       _recordingDuration = recDuration;
     });
 
-    _addLog('stopSession (录音 ${_formatDuration(recDuration)})');
+    _addLog('stopSession (recorded ${_formatDuration(recDuration)})');
 
     if (_mode == _AsrMode.platform) {
       await _stopPlatformRecording();
@@ -368,7 +368,7 @@ class _AsrTestScreenState extends ConsumerState<AsrTestScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('ASR 引擎测试')),
+      appBar: AppBar(title: const Text('ASR Engine Test')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -401,13 +401,13 @@ class _AsrTestScreenState extends ConsumerState<AsrTestScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('引擎配置', style: theme.textTheme.titleMedium),
+            Text('Engine Configuration', style: theme.textTheme.titleMedium),
             const SizedBox(height: 12),
 
             // ASR 方式选择
             Row(
               children: [
-                const SizedBox(width: 80, child: Text('ASR 方式')),
+                const SizedBox(width: 80, child: Text('ASR Mode')),
                 Expanded(
                   child: SegmentedButton<_AsrMode>(
                     segments: [
@@ -418,7 +418,7 @@ class _AsrTestScreenState extends ConsumerState<AsrTestScreen> {
                         ),
                       const ButtonSegment(
                         value: _AsrMode.offline,
-                        label: Text('本地离线'),
+                        label: Text('Offline'),
                       ),
                     ],
                     selected: {_mode},
@@ -435,7 +435,7 @@ class _AsrTestScreenState extends ConsumerState<AsrTestScreen> {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  const SizedBox(width: 80, child: Text('模型')),
+                  const SizedBox(width: 80, child: Text('Model')),
                   Expanded(
                     child: DropdownButton<String>(
                       value: _selectedModelId,
@@ -479,16 +479,16 @@ class _AsrTestScreenState extends ConsumerState<AsrTestScreen> {
 
     return Row(
       children: [
-        const SizedBox(width: 80, child: Text('模型状态')),
+        const SizedBox(width: 80, child: Text('Model status')),
         Expanded(
           child: switch (status) {
             AsrModelDownloadStatus.notDownloaded => Row(
               children: [
-                const Text('未下载'),
+                const Text('Not downloaded'),
                 const SizedBox(width: 12),
                 FilledButton.tonal(
                   onPressed: _downloadModel,
-                  child: const Text('下载'),
+                  child: const Text('Download'),
                 ),
               ],
             ),
@@ -507,22 +507,25 @@ class _AsrTestScreenState extends ConsumerState<AsrTestScreen> {
               children: [
                 const Icon(Icons.check_circle, color: Colors.green, size: 18),
                 const SizedBox(width: 4),
-                const Text('已下载'),
+                const Text('Downloaded'),
                 const SizedBox(width: 12),
-                TextButton(onPressed: _deleteModel, child: const Text('删除')),
+                TextButton(
+                  onPressed: _deleteModel,
+                  child: const Text('Delete'),
+                ),
               ],
             ),
             AsrModelDownloadStatus.failed => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '下载失败: ${_downloadProgress.error}',
+                  'Download failed: ${_downloadProgress.error}',
                   style: const TextStyle(color: Colors.red),
                 ),
                 const SizedBox(height: 4),
                 FilledButton.tonal(
                   onPressed: _downloadModel,
-                  child: const Text('重试'),
+                  child: const Text('Retry'),
                 ),
               ],
             ),
@@ -541,13 +544,13 @@ class _AsrTestScreenState extends ConsumerState<AsrTestScreen> {
 
     final String hint;
     if (_isTranscribing) {
-      hint = '转录中...';
+      hint = 'Transcribing...';
     } else if (_isRecording) {
-      hint = '录音中... ${_formatDuration(_recordingStopwatch.elapsed)}';
+      hint = 'Recording... ${_formatDuration(_recordingStopwatch.elapsed)}';
     } else if (canRecord) {
-      hint = '点击开始录音';
+      hint = 'Tap to start recording';
     } else {
-      hint = '请先下载模型';
+      hint = 'Download a model first';
     }
 
     return Column(
@@ -588,7 +591,7 @@ class _AsrTestScreenState extends ConsumerState<AsrTestScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('转录结果', style: theme.textTheme.titleMedium),
+            Text('Transcription Result', style: theme.textTheme.titleMedium),
             const SizedBox(height: 8),
             SelectableText(_transcript ?? '', style: theme.textTheme.bodyLarge),
           ],
@@ -614,19 +617,22 @@ class _AsrTestScreenState extends ConsumerState<AsrTestScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('性能指标', style: theme.textTheme.titleMedium),
+            Text('Performance Metrics', style: theme.textTheme.titleMedium),
             const SizedBox(height: 8),
-            _metricRow('录音时长', _formatDuration(_recordingDuration)),
+            _metricRow(
+              'Recording duration',
+              _formatDuration(_recordingDuration),
+            ),
             if (_inferenceTime != null) ...[
-              _metricRow('推理耗时', _formatDuration(_inferenceTime)),
+              _metricRow('Inference time', _formatDuration(_inferenceTime)),
               _metricRow('RTF', rtf.toStringAsFixed(3)),
             ],
             _metricRow(
-              '引擎',
+              'Engine',
               _mode == _AsrMode.platform ? 'Platform (GMS)' : _getEngine().name,
             ),
             if (_mode == _AsrMode.offline && selectedModel.isNotEmpty)
-              _metricRow('模型', selectedModel.first.displayName),
+              _metricRow('Model', selectedModel.first.displayName),
           ],
         ),
       ),
@@ -657,7 +663,7 @@ class _AsrTestScreenState extends ConsumerState<AsrTestScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('事件日志', style: theme.textTheme.titleMedium),
+            Text('Event Log', style: theme.textTheme.titleMedium),
             const SizedBox(height: 8),
             SizedBox(
               height: 200,

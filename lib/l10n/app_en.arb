@@ -260,7 +260,7 @@
   "languageDescription": "Language used for the app interface",
   "languageSystem": "Follow System",
   "languageEnglish": "English",
-  "languageChinese": "简体中文",
+  "languageChinese": "Chinese (Simplified)",
   "nativeLanguage": "Native Language",
   "nativeLanguageDescription": "translations & analysis language",
   "about": "About",
